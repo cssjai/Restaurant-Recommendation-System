@@ -1,5 +1,5 @@
 .sidebar {
-    flex-basis: 50rem;
+    flex-basis: 70rem;
     background-color: var(--color-dark--1);
     padding: 2rem 4rem;
     display: flex;
@@ -68,42 +68,42 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 0.75rem 1.5rem;
+
+    &__title {
+      font-size: 1.7rem;
+      font-weight: 600;
+      grid-column: 1 / -1;
+
+    }
+
+    &__details {
+      display: flex;
+      align-items: baseline;
+
+    }
+
+    &__icon {
+      font-size: 2rem;
+      margin-right: 0.2rem;
+      height: 0.28rem;
+
+    }
+    
+    &__value {
+      font-size: 1.5rem;
+      margin-right: 0.7rem;
+
+    }
+    
+    &__unit {
+      font-size: 1.1rem;
+      color: var(--color-light--1);
+      text-transform: uppercase;
+      font-weight: 800;
+
+    }
   }
-  .restaurant--running {
-    border-left: 5px solid var(--color-brand--2);
-  }
-  .restaurant--cycling {
-    border-left: 5px solid var(--color-brand--1);
-  }
-  
-  .restaurant__title {
-    font-size: 1.7rem;
-    font-weight: 600;
-    grid-column: 1 / -1;
-  }
-  
-  .restaurant__details {
-    display: flex;
-    align-items: baseline;
-  }
-  
-  .restaurant__icon {
-    font-size: 2rem;
-    margin-right: 0.2rem;
-    height: 0.28rem;
-  }
-  
-  .restaurant__value {
-    font-size: 1.5rem;
-    margin-right: 0.7rem;
-  }
-  
-  .restaurant__unit {
-    font-size: 1.1rem;
-    color: var(--color-light--1);
-    text-transform: uppercase;
-    font-weight: 800;
-  }
+
   
   .form {
     background-color: var(--color-dark--2);
@@ -151,7 +151,33 @@
       }
 
       &__btn {
-        display: none;
+        grid-column: 1/-1;
+        margin: auto;
+        margin-top: 1rem;
+        font-size: 1.5rem;
+        height: max-content;
+        padding: 1rem;
+        border: none;
+        border-radius: 5px;
+        background-color: var(--color-button--2);
+        color: white;
+        cursor: pointer;
+
+        &,
+        &:link,
+        &:visited {
+            transition: all .5s;
+        }
+        
+        &:hover {
+          background-color: var(--color-button--1);
+            box-shadow: 0 3rem 4rem rgba(0, 0, 0, 0.253);
+        }
+
+        &:focus,
+        &:active {
+            box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.253);
+        }
       }
     
   }

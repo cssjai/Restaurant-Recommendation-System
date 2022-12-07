@@ -1,26 +1,37 @@
 'use strict';
-
 class Restaurant {
   date = new Date();
   id = (Date.now() + '').slice(-10);
   
 
-  constructor(coords, distance, rating) {
+  constructor(nameRes, coords, smokerType, drinker, dressPref, ambience, transport, maritalS, ageValue, interest, personality, activity, budget) {
     // this.date = ...
     // this.id = ...
+    this.type = nameRes;
     this.coords = coords; // [lat, lng]
-    this.distance = distance; // in km
-    this.rating = rating; 
+    this.smoker = smokerType;
+    this.drinker = drinker; // in km
+    // this.rating = rating; 
+    this.dressPref = dressPref;
+    this.ambience = ambience;
+    this.transport = transport;
+    this.maritalS = maritalS;
+    this.ageValue = ageValue;
+    this.interest = interest;
+    this.personality = personality;
+    this.activity = activity;
+    this.budget = budget;
    
   }
 
   _setDescription() {
     // prettier-ignore
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    // const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-    this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${
-      months[this.date.getMonth()]
-    } ${this.date.getDate()}`;
+    // this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${
+    //   months[this.date.getMonth()]
+    // } ${this.date.getDate()}`;
+    this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)}`;
   }
 
   click() {
@@ -28,15 +39,31 @@ class Restaurant {
   }
 }
 
+// Outlet(obj.resName ,obj.cords, this.#yourLoc, rating, obj.city, smokerType, drinker, dressPref, ambience, transport, maritalS, ageValue, interest, personality, activity, budget); 
+
 class Outlet extends Restaurant {
 
-  type = 'ResName';
-  constructor(coords, coordsY, distance, rating, city) {
-    super(coords, distance, rating);
+  constructor(nameRes, coords, coordsY, city, smokerType, drinker, dressPref, ambience, transport, maritalS, ageValue, interest, personality, activity, budget) {
+    super(nameRes, coords, smokerType, drinker, dressPref, ambience, transport, maritalS, ageValue, interest, personality, activity, budget);
     this.city = city; 
     this.coordsY = coordsY;
     this.far();
     this._setDescription();
+    this.yourPrefs = {
+      "smoker":`${smokerType}`,
+      "drinker":`${drinker}`,
+      "dressPref":`${dressPref}`,
+      "ambience":`${ambience}`,
+      "transport":`${transport}`,
+      "maritalS":`${maritalS}`,
+      "ageValue":`${ageValue}`,
+      "interest":`${interest}`,
+      "personality":`${personality}`,
+      "activity":`${activity}`,
+      "budget":`${budget}`,
+    }
+
+    // this.pref();
   }
   far() {
     var lat1 = this.coordsY[0];
@@ -54,15 +81,30 @@ class Outlet extends Restaurant {
     this.dist = this.dist * 1.609344
     return this.dist
   }
+
+  pref() {
+    console.log(this.yourPrefs);  
+  }
 }
 
 ///////////////////////////////////////
 // APPLICATION ARCHITECTURE
 const form = document.querySelector('.form');
 const containerRestaurants = document.querySelector('.restaurants');
-const inputType = document.querySelector('.form__input--type');
-const inputDistance = document.querySelector('.form__input--distance');
-const inputRating = document.querySelector('.form__input--rating');
+const inputSmokerType = document.querySelector('.form__input--smoker');
+const inputDrinkerLevel = document.querySelector('.form__input--drinkerLevel');
+const inputDressPreference = document.querySelector('.form__input--dressPreference');
+const inputAmbience = document.querySelector('.form__input--ambience');
+const inputTransport = document.querySelector('.form__input--transport');
+const inputMarital = document.querySelector('.form__input--marital');
+const inputAge = document.querySelector('.form__input--age');
+const inputInterest = document.querySelector('.form__input--interest');
+const inputPersonality = document.querySelector('.form__input--personality');
+const inputActivity = document.querySelector('.form__input--activity');
+const inputBudget = document.querySelector('.form__input--budget');
+
+
+// const inputRating = document.querySelector('.form__input--rating');
 const inputCity = document.querySelector('.form__input--city');
 // const inputLatitude = document.querySelector('.form__input--latitude');
 // const inputLongitude= document.querySelector('.form__input--longitude');
@@ -76,6 +118,7 @@ class App {
   #mapEvent;
   #restaurants = [];
   #yourLoc;
+  #yourPref;
 
   constructor() {
     // Get user's position
@@ -85,7 +128,7 @@ class App {
     this._getLocalStorage();
 
     // Attach event handlers
-    form.addEventListener('submit', this._newRestaurant.bind(this));
+    form.addEventListener('submit', this.handleFormSubmission.bind(this));
     containerRestaurants.addEventListener('click', this._moveToPopup.bind(this));
   }
 
@@ -157,12 +200,12 @@ class App {
   _showForm(mapE) {
     this.#mapEvent = mapE;
     // form.classList.remove('hidden');
-    inputDistance.focus();
+    inputDrinkerLevel.focus();
   }
 
   // _hideForm() {
   //   // Empty inputs
-  //   inputDistance.value = inputRating.value = inputCity.value = '';
+  //   inputDrinkerLevel.value = inputRating.value = inputCity.value = '';
 
   //   // form.style.display = 'none';
   //   // form.classList.add('hidden');
@@ -173,35 +216,37 @@ class App {
   //   inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
   //   inputCity.closest('.form__row').classList.toggle('form__row--hidden');
   // }
-  _newRestaurant(e) {
-    const validInputs = (...inputs) => inputs.every(inp => Number.isFinite(inp));
-    const allPositive = (...inputs) => inputs.every(inp => inp > 0);
-
-    
-
+  async handleFormSubmission(e) {
     e.preventDefault();
 
     // Get data from form
-    const type = inputType.value;
-    const distance = +inputDistance.value;
-    const rating = +inputRating.value;
-    const city = inputCity.value;
-
+    const smokerType = inputSmokerType.value;
+    const drinker = inputDrinkerLevel.value;
+    // const rating = +inputRating.value;
+    const dressPref = inputDressPreference.value;
+    const ambience = inputAmbience.value;
+    const transport = inputTransport.value;
+    const maritalS = inputMarital.value;
+    const ageValue = +inputAge.value;
+    const interest = inputInterest.value;
+    const personality = inputPersonality.value;
+    const activity = inputActivity.value;
+    const budget = inputBudget.value;
     
     // const { lat, lng } = this.#mapEvent.latlng;
     // let restaurant;
 
     // // Empty inputs
-    // inputDistance.value = inputRating.value = inputCity.value = '';
+    // inputDrinkerLevel.value = inputRating.value = inputCity.value = '';
     
     // // Check if data is valid
     // if (
-    //   !validInputs(distance, rating) ||
-    //   !allPositive(distance, rating)
+    //   !validInputs(drinker, rating) ||
+    //   !allPositive(drinker, rating)
     //   )
     //   return alert('Inputs have to be positive numbers!');
       
-    //   restaurant = new Outlet([lat, lng], this.#yourLoc, distance, rating, city);  
+    //   restaurant = new Outlet([lat, lng], this.#yourLoc, drinker, rating, city);  
     //   console.log(restaurant);
 
     // // Add new object to restaurant array
@@ -218,55 +263,125 @@ class App {
     //////////////
     // TEST
 
-    const cords = [
-      [28.53538174 , 77.19692286],
-      [28.53549388 , 77.19747473],
-      [28.5375472  , 77.1980333 ],
-      [28.5355234  , 77.1969242 ],
-      [28.5381335  , 77.1981225 ],
-      [28.53744768 , 77.19815936],
-      [28.53747419 , 77.19795015],
-      [28.53839431 , 77.19804244],
-      [28.5386662  , 77.1988082 ],
-      [28.53576259 , 77.19696745],
-      [28.53565588 , 77.19679244],
-      [28.538438   , 77.199152  ],
-      
-      [28.53789627 , 77.19815668],
-      [28.6557549  , 77.3986287 ],
-      [28.6560516  , 77.3811977 ],
-      // [28.6564531  , 77.3916337 ],
-      [28.6562624  , 77.3816026 ],
-      [28.554463   , 77.087897  ],
-      [28.55169    , 77.126642  ],
-      [28.5620725  , 77.2683524 ],
-      [28.6564531, 77.3916337]
+    const objRes = [
+        {
+          resName: 'Domino',
+          cords: [28.53538174 , 77.19692286],
+          city: 'Noida'
+        },
+        {
+          resName: 'Pizza Hut',
+          cords: [28.53565588 , 77.19679244],
+          city: 'Delhi'
+        },
+        {
+          resName: 'Mc Donalds',
+          cords: [28.6564531, 77.3916337],
+          city: 'New Delhi'
+        },
+        {
+          resName: 'La Pino Pizza',
+          cords: [28.55169    , 77.126642],
+          city: 'delhi'
+        },
+        {
+          resName: 'Uncles',
+          cords: [28.6560516  , 77.3811977],
+          city: 'Noida'
+        }
+
     ];
-    
+
+    // const cords = [
+    //   [28.53549388 , 77.19747473],
+    //   [28.5375472  , 77.1980333 ],
+    //   [28.5355234  , 77.1969242 ],
+    //   [28.5381335  , 77.1981225 ],
+    //   [28.53744768 , 77.19815936],
+    //   [28.53747419 , 77.19795015],
+    //   [28.53839431 , 77.19804244],
+    //   [28.5386662  , 77.1988082 ],
+    //   [28.53576259 , 77.19696745],
+    //   [28.53565588 , 77.19679244],
+    //   [28.538438   , 77.199152  ],
+      
+    //   [28.53789627 , 77.19815668],
+    //   [28.6557549  , 77.3986287 ],
+    //   [28.6560516  , 77.3811977 ],
+    //   // [28.6564531  , 77.3916337 ],
+    //   [28.6562624  , 77.3816026 ],
+    //   [28.554463   , 77.087897  ],
+    //   [28.55169    , 77.126642  ],
+    //   [28.5620725  , 77.2683524 ],
+    //   [28.6564531, 77.3916337]
+    // ];
     let restaurant;
 
+    // const smokerType = inputSmokerType.value;
+    // const drinker = inputDrinkerLevel.value;
+    // // const rating = +inputRating.value;
+    // const dressPref = inputDressPreference.value;
+    // const ambience = inputAmbience.value;
+    // const transport = inputTransport.value;
+    // const maritalS = inputMarital.value;
+    // const ageValue = +inputAge.value;
+    // const interest = inputInterest.value;
+    // const personality = inputPersonality.value;
+    // const activity = inputActivity.value;
+    // const budget = inputBudget.value;
+
     // Empty inputs
-    inputDistance.value = inputRating.value = inputCity.value = '';
+    inputAge.value = '';
     
     // Check if data is valid
-    if (
-      !validInputs(distance, rating) ||
-      !allPositive(distance, rating)
-      )
-      return alert('Inputs have to be positive numbers!');
+    // if (
+    //   !validInputs(drinker, rating) ||
+    //   !allPositive(drinker, rating)
+    //   )
+    //   return alert('Inputs have to be positive numbers!');
+
+    const payload = {
+      "smoker":`${inputSmokerType.value}`,
+      "drinker":`${inputDrinkerLevel.value}`,
+      "dressPref":`${inputDressPreference.value}`,
+      "ambience":`${inputAmbience.value}`,
+      "transport":`${inputTransport.value}`,
+      "maritalS":`${inputMarital.value}`,
+      "ageValue":`${inputAge.value}`,
+      "interest":`${inputInterest.value}`,
+      "personality":`${inputPersonality.value}`,
+      "activity":`${inputActivity.value}`,
+      "budget":`${inputBudget.value}`,
+    }
+
+    // call api here
+
+    /**
+     * restaurant details
+     * name, city, longitude, latitude
+     */
+    const restaurantSuggestions = await fetch("http://localhost:9000", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "content-type": "application/json"
+      }
+    }).then(res => res.json()).catch(error => console.log("An Error occurred while fetching restaurant suggestions!", { error }));
+
+
+    // pass it through map function below
     
-    cords.forEach(cr => {
-      restaurant = new Outlet(cr, this.#yourLoc, distance, rating, city);  
-      console.log(restaurant);
+    restaurantSuggestions?.map(suggestion => {
+      restaurant = new Outlet(suggestion.resName ,suggestion.cords, this.#yourLoc, suggestion.city, smokerType, drinker, dressPref, ambience, transport, maritalS, ageValue, interest, personality, activity, budget);  
+        
+      // Add new object to restaurant array
+      this.#restaurants.push(restaurant);
 
-    // Add new object to restaurant array
-    this.#restaurants.push(restaurant);
+      // Render restaurant on map as marker
+      this._renderRestaurantMarker(restaurant);
 
-    // Render restaurant on map as marker
-    this._renderRestaurantMarker(restaurant);
-
-    // Render restaurant on list
-    this._renderRestaurant(restaurant);
+      // Render restaurant on list
+      this._renderRestaurant(restaurant);
     })
       
       
@@ -312,12 +427,24 @@ class App {
         </div>
         
         <div class="restaurant__details">
-          <span class="restaurant__icon">⭐</span>
-          <span class="restaurant__value">${restaurant.rating}</span>
+          <span class="restaurant__icon">💰</span>
+          <span class="restaurant__value">${restaurant.budget}</span>
+        </div>
+        <div class="restaurant__details">
+          <span class="restaurant__icon">👘</span>
+          <span class="restaurant__value">${restaurant.dressPref}</span>
+        </div>
+        <div class="restaurant__details">
+          <span class="restaurant__icon">🧍🏻‍♂️</span>
+          <span class="restaurant__value">${restaurant.interest}</span>
+        </div>
+        <div class="restaurant__details">
+          <span class="restaurant__icon">👩🏻‍🤝‍👩🏻</span>
+          <span class="restaurant__value">${restaurant.ambience}</span>
         </div>
         <div class="restaurant__details">
           <span class="restaurant__icon">📍</span>
-          <span class="restaurant__value">${restaurant.city}</span>
+          <span class="restaurant__value">City</span>
         </div>
         
     </li>
@@ -325,7 +452,7 @@ class App {
 
     // <div class="restaurant__details">
     //       <span class="restaurant__icon">🛵</span>
-    //       <span class="restaurant__value">${restaurant.distance}</span>
+    //       <span class="restaurant__value">${restaurant.drinker}</span>
     //       <span class="restaurant__unit">km</span>
     //     </div>
 
@@ -363,6 +490,7 @@ class App {
     const data = JSON.parse(localStorage.getItem('restaurants'));
     console.log(data);
 
+
     if(!data) return;
 
     this.#restaurants = data;
@@ -399,8 +527,10 @@ class App {
   //   })
   //   }
 
+
   
 }
+
 
 resetBtn.addEventListener('click', function() {
     app.reset();
@@ -411,4 +541,40 @@ resetBtn.addEventListener('click', function() {
 
 const app = new App();
 
-// app.renderRestaurantMarker(cords);
+
+// let url = 'http://127.0.0.1:5500/software/Restaurant-Recommendation-System/index.html';
+// let data = {
+//     range : `${inputDrinkerLevel}`,
+//     rating : `${inputRating}`,
+//     city : `${inputCity}`
+// }
+
+// let fetchData = {
+//   Method: 'POST',
+//   Body: JSON.stringify(data),
+//   Headers: {
+//     Accept: 'application.json',
+//     'Content-Type': 'application/json'
+//   }
+// }
+
+// fetch(url, fetchData)
+//   .then(function() {
+//     // Handle response you get from the API
+//     console.log(fetchData);
+//   });
+// // app.renderRestaurantMarker(cords);
+
+
+
+// const Http = new XMLHttpRequest();
+// // const url1='https://jsonplaceholder.typicode.com/posts';
+// const url1='http://127.0.0.1:5500/software/Restaurant-Recommendation-System/index.html';
+// Http.open("GET", url1);
+// Http.send();
+
+// Http.onreadystatechange = (e) => {
+//   console.log(Http.responseText + "lol haha")
+//   console.log("lol");
+// }
+console.log("hello");
