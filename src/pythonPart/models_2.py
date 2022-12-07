@@ -632,7 +632,7 @@ for index, row in restaurants_df.iterrows():
 for col_name in ['smoker', 'drink_level', 'dress_preference', 'ambience', 'transport',
        'marital_status', 'interest', 'personality', 'activity',
        'budget', 'alcohol', 'smoking_area', 'price', 'Rambience']:
-       dataset[col_name] = le.fit_transform(dataset[col_name])
+       dataset[col_name] = labelEncoder.fit_transform(dataset[col_name])
 
 
 X = dataset.iloc[:1042,1:]

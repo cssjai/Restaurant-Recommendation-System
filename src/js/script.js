@@ -263,34 +263,34 @@ class App {
     //////////////
     // TEST
 
-    const objRes = [
-        {
-          resName: 'Domino',
-          cords: [28.53538174 , 77.19692286],
-          city: 'Noida'
-        },
-        {
-          resName: 'Pizza Hut',
-          cords: [28.53565588 , 77.19679244],
-          city: 'Delhi'
-        },
-        {
-          resName: 'Mc Donalds',
-          cords: [28.6564531, 77.3916337],
-          city: 'New Delhi'
-        },
-        {
-          resName: 'La Pino Pizza',
-          cords: [28.55169    , 77.126642],
-          city: 'delhi'
-        },
-        {
-          resName: 'Uncles',
-          cords: [28.6560516  , 77.3811977],
-          city: 'Noida'
-        }
+    // const objRes = [
+    //     {
+    //       resName: 'Domino',
+    //       cords: [28.53538174 , 77.19692286],
+    //       city: 'Noida'
+    //     },
+    //     {
+    //       resName: 'Pizza Hut',
+    //       cords: [28.53565588 , 77.19679244],
+    //       city: 'Delhi'
+    //     },
+    //     {
+    //       resName: 'Mc Donalds',
+    //       cords: [28.6564531, 77.3916337],
+    //       city: 'New Delhi'
+    //     },
+    //     {
+    //       resName: 'La Pino Pizza',
+    //       cords: [28.55169    , 77.126642],
+    //       city: 'delhi'
+    //     },
+    //     {
+    //       resName: 'Uncles',
+    //       cords: [28.6560516  , 77.3811977],
+    //       city: 'Noida'
+    //     }
 
-    ];
+    // ];
 
     // const cords = [
     //   [28.53549388 , 77.19747473],
@@ -342,12 +342,12 @@ class App {
 
     const payload = {
       "smoker":`${inputSmokerType.value}`,
-      "drinker":`${inputDrinkerLevel.value}`,
-      "dressPref":`${inputDressPreference.value}`,
+      "drink_level":`${inputDrinkerLevel.value}`,
+      "dress_preference":`${inputDressPreference.value}`,
       "ambience":`${inputAmbience.value}`,
       "transport":`${inputTransport.value}`,
-      "maritalS":`${inputMarital.value}`,
-      "ageValue":`${inputAge.value}`,
+      "marital_status":`${inputMarital.value}`,
+      "age":`${ageValue}`,
       "interest":`${inputInterest.value}`,
       "personality":`${inputPersonality.value}`,
       "activity":`${inputActivity.value}`,
@@ -360,11 +360,11 @@ class App {
      * restaurant details
      * name, city, longitude, latitude
      */
-    const restaurantSuggestions = await fetch("http://localhost:9000", {
+    const restaurantSuggestions = await fetch("http://localhost:8000/suggestions", {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
-        "content-type": "application/json"
+        "content-type": "application/json",
       }
     }).then(res => res.json()).catch(error => console.log("An Error occurred while fetching restaurant suggestions!", { error }));
 
@@ -372,7 +372,7 @@ class App {
     // pass it through map function below
     
     restaurantSuggestions?.map(suggestion => {
-      restaurant = new Outlet(suggestion.resName ,suggestion.cords, this.#yourLoc, suggestion.city, smokerType, drinker, dressPref, ambience, transport, maritalS, ageValue, interest, personality, activity, budget);  
+      restaurant = new Outlet(suggestion.name ,suggestion.coords, this.#yourLoc, suggestion.city, smokerType, drinker, dressPref, ambience, transport, maritalS, ageValue, interest, personality, activity, budget);  
         
       // Add new object to restaurant array
       this.#restaurants.push(restaurant);
@@ -444,7 +444,7 @@ class App {
         </div>
         <div class="restaurant__details">
           <span class="restaurant__icon">📍</span>
-          <span class="restaurant__value">City</span>
+          <span class="restaurant__value">${restaurant.city != '?' ? restaurant.city : 'unknown'}</span>
         </div>
         
     </li>
