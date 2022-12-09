@@ -37,7 +37,7 @@ def getSuggestionsByPrefference ( smoker,  drink_level,  dress_preference,  ambi
   X = X.drop(['area', 'dress_code', 'hijos', 'religion', 'accessibility', 'other_services'], axis=1)
   X_to_be_predicted = X_to_be_predicted.drop(['Rating_sum','area', 'dress_code', 'hijos', 'religion', 'accessibility', 'other_services'], axis=1)
 
-  loaded_model = pickle.load(open('D:/SNU/CSD/CSD 493 - Project-1/software/Restaurant-Recommendation-System/src/model/modelKNN', 'rb'))
+  loaded_model = pickle.load(open('D:/SNU/CSD/CSD 493 - Project-1/software/Restaurant-Recommendation-System/src/model/modelMatrixFactorization', 'rb'))
   y_pred = loaded_model.predict(X_to_be_predicted)
 
   # FIND PREDICTED RANKINGS OF RESTAURANTS

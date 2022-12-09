@@ -2,8 +2,6 @@ from fastapi import FastAPI,  Request
 from logic import getSuggestionsByPrefference
 from fastapi.middleware.cors import CORSMiddleware
 
-
-
 app = FastAPI()
 origins = [
     "http://localhost.tiangolo.com",
